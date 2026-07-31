@@ -69,7 +69,8 @@ if api_input:
 
 user_input = st.sidebar.text_area(
     "Deskripsi Keluhan Klien:",
-    value="Aplikasi web kami memunculkan error 502 Bad Gateway. Selain itu, teknisi di ruang server melaporkan mesin server fisik berbunyi bip panjang terus-menerus.",
+    value="",
+    placeholder="Ketikkan keluhan atau masalah teknis di sini...",
     height=150
 )
 
@@ -82,7 +83,7 @@ if btn_process:
     with st.spinner("Memproses respon agen dan mencocokkan SOP..."):
         
         # Agent Helpdesk
-        sop_hd = ambil_konteks_dari_rag("Helpdesk 502 Bad Gateway")
+        sop_hd = ambil_konteks_dari_rag("user_input")
         prompt_hd = f"""Kamu adalah Agent AI dari Divisi IT Helpdesk. Berdasarkan SOP resmi perusahaan berikut:
 {sop_hd}
 Analisis keluhan klien ini: '{user_input}'.
@@ -90,7 +91,7 @@ Berikan respon profesional awal kepada klien dan rumuskan pesan operan formal un
         respon_hd = llm.invoke(prompt_hd).content
 
         # Agent SysAdmin
-        sop_sa = ambil_konteks_dari_rag("SysAdmin restart Nginx hardware")
+        sop_sa = ambil_konteks_dari_rag("SysAdmin {user_input}")
         prompt_sa = f"""Kamu adalah Agent AI dari Divisi SysAdmin. Kamu menerima operan tugas dari Helpdesk:
 '{respon_hd}'
 Berdasarkan SOP tim SysAdmin berikut:
@@ -99,7 +100,7 @@ Tentukan tindakan teknis apa yang harus kamu ambil berdasarkan situasi dari kelu
         respon_sa = llm.invoke(prompt_sa).content
 
         # Agent Procurement
-        sop_pr = ambil_konteks_dari_rag("Procurement Purchase Order Vendor")
+        sop_pr = ambil_konteks_dari_rag("Procurement {user_input}")
         prompt_pr = f"""Kamu adalah Agent AI dari Divisi Procurement IT. Kamu menerima instruksi dari tim SysAdmin:
 '{respon_sa}'
 Berdasarkan SOP divisi belanja berikut:
